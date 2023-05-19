@@ -75,4 +75,14 @@ public class UserService implements UserDetailsService {
                 .roles(user.getRole().toString())
                 .build();
     }
+
+    //잔고 충전
+    @Transactional
+    public void updateBalance(String userEmail, Integer amount) {
+        User user = userRepository.findByEmail(userEmail);
+        if (user != null) {
+            user.setBalance(user.getBalance() + amount);
+        }
+    }
+
 }
