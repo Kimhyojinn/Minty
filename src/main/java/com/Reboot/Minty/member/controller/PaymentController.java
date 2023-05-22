@@ -33,6 +33,7 @@ public class PaymentController {
     private String secretKey;
     @Value("${payment.clientKey}")
     private String clientKey;
+
     @GetMapping(value = "success")
     public String paymentResult(
             Model model, HttpServletRequest request,
@@ -117,7 +118,5 @@ public class PaymentController {
         model.addAttribute("clientKey", clientKey);
         return "pay/pay";
     }
-
-
 
 }
