@@ -1,13 +1,7 @@
 package com.Reboot.Minty.member.controller;
 
-import com.Reboot.Minty.member.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,20 +21,14 @@ import java.util.Base64;
 @RequestMapping(value = "/")
 public class PaymentController {
 
-    @Autowired
-    private UserService userService;
-    @Value("${payment.secretKey}")
-    private String secretKey;
-    @Value("${payment.clientKey}")
-    private String clientKey;
-
     @GetMapping(value = "success")
     public String paymentResult(
-            Model model, HttpServletRequest request,
+            Model model,
             @RequestParam(value = "orderId") String orderId,
             @RequestParam(value = "amount") Integer amount,
             @RequestParam(value = "paymentKey") String paymentKey) throws Exception {
 
+        String secretKey = "test_sk_ADpexMgkW364M6ekJxBrGbR5ozO0:";
 
         Base64.Encoder encoder = Base64.getEncoder();
         byte[] encodedBytes = encoder.encode(secretKey.getBytes("UTF-8"));
@@ -91,11 +79,6 @@ public class PaymentController {
             model.addAttribute("message", (String) jsonObject.get("message"));
         }
 
-        HttpSession session = request.getSession();
-        String userEmail = (String) session.getAttribute("userEmail");
-        System.out.println(userEmail);
-
-        userService.updateBalance(userEmail, amount);
         return "pay/success";
     }
 
@@ -114,9 +97,10 @@ public class PaymentController {
 
     //home.html 에서 충전하기 누르면 이동
     @GetMapping(value = "charge")
-    public String charge(Model model) {
-        model.addAttribute("clientKey", clientKey);
+    public String charge() {
         return "pay/pay";
     }
+
+
 
 }
