@@ -100,7 +100,6 @@
     </style>
 </head>
 <body>
-<form method="post" action="/schedule/{tradeId}/save" th:action="@{/schedule/{tradeId}/save(tradeId=${tradeId})}">
 <!-- 알림 메시지 -->
 <div class="notification">
     <span th:text="'[' + (${role} == 'buyer' ? ${seller.nickName} : ${buyer.nickName}) + ']'"></span>
@@ -129,24 +128,24 @@
             <p id="error"></p>
             <i class="weather-icon"></i><br>
             <div class="button-container">
-                <button type="button" onclick="saveSchedule()">확인</button>
-                <button type="button" onclick="cancelSchedule()">취소</button>
+                <button>확인</button>
+                <button>취소</button>
             </div>
         </div>
     </div>
 
     <!-- 시간 선택 섹션 -->
-    <div class="section">
+    <div class="section" id="time-selection-section" style="display: none;">
         <h2>시간 선택</h2>
         <div id="selected-date-display"></div>
         <select id="selected-time">
             <option value="7">07:00</option>
             <option value="8">08:00</option>
             <option value="9">09:00</option>
+            <!-- 여기에 다른 시간 옵션 추가 -->
         </select>
     </div>
 </div>
-</form>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
@@ -168,6 +167,7 @@
                 selectedDate = moment(date).format('YYYY-MM-DD'); // 선택된 날짜 저장
 
                 updateWeatherInfo();
+                showTimeSelectionSection();
             },
             dayRender: function(date, cell) {
                 if (moment(date).isBefore(moment(), 'day')) {
@@ -275,25 +275,16 @@
         updateWeatherInfo(); // 페이지 로드 시 초기화
     });
 
-    function saveSchedule() {
-        var selectedTime = getSelectedTime();
-        if (selectedTime) {
-            // 거래 시간 선택 완료
-            alert('선택된 시간: ' + selectedTime + ':00');
-        } else {
-            // 거래 시간을 선택하지 않은 경우
-            alert('거래 시간을 선택해주세요.');
-        }
-    }
-
-    function cancelSchedule() {
-        // 거래 시간 선택 취소
-        $('#selected-date-display').text('');
+    function showTimeSelectionSection() {
+        $('#time-selection-section').show();
     }
 
     function getSelectedTime() {
         var selectedTime = $('#selected-time').val();
-        return selectedTime;
+        if (selectedTime) {
+            return selectedTime + ':00';
+        }
+        return null;
     }
 </script>
 </body>
