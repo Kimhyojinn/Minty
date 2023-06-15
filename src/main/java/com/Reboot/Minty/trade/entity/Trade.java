@@ -8,7 +8,10 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Time;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Getter @Setter
 @Entity
@@ -35,7 +38,10 @@ public class Trade {
     private LocalDateTime startDate;
 
     @Column(name = "trade_date")
-    private LocalDateTime tradeDate;
+    private LocalDate tradeDate;
+
+    @Column(name="trade_time")
+    private LocalTime tradeTime;
 
     @Column(name = "end_date")
     private LocalDateTime endDate;

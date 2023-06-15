@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,43 +37,6 @@ public class TradeController {
         this.userService = userService;
         this.reviewService = reviewService;
     }
-//
-//    @GetMapping("/{tradeId}")
-//    public String getTradeDetail(@PathVariable Long tradeId, HttpSession session, Model model) {
-//        TradeDto tradeDto = tradeService.getTradeDetail(tradeId);
-//        Long userId = (Long) session.getAttribute("userId");
-//        String role = tradeService.getRoleForTrade(tradeId, userId);
-//        model.addAttribute("tradeDto", tradeDto);
-//        model.addAttribute("role", role);
-//        return "trade/detail";
-//    }
-//
-//    @GetMapping("/{tradeId}/review")
-//    public String getReviewDetail(@PathVariable Long tradeId, HttpSession session, Model model) {
-//        ReviewDto reviewDto = tradeService.getReviewDetail(tradeId);
-//        Long userId = (Long) session.getAttribute("userId");
-//        String role = tradeService.getRoleForTrade(tradeId, userId);
-//        model.addAttribute("reviewDto", reviewDto);
-//        model.addAttribute("role", role);
-//        return "trade/review";
-//    }
-//
-//    @GetMapping("/{tradeId}/review/create")
-//    public String showReviewForm(@PathVariable Long tradeId, HttpSession session, Model model) {
-//        TradeDto tradeDto = tradeService.getTradeDetail(tradeId);
-//        Long userId = (Long) session.getAttribute("userId");
-//        String role = tradeService.getRoleForTrade(tradeId, userId);
-//        model.addAttribute("tradeDto", tradeDto);
-//        model.addAttribute("role", role);
-//        model.addAttribute("reviewDto", new ReviewDto());
-//        return "trade/review-form";
-//    }
-
-//    @PostMapping("/{tradeId}/review/create")
-//    public String submitReviewForm(@PathVariable Long tradeId, @ModelAttribute("reviewDto") ReviewDto reviewDto) {
-//        // 후기 작성 처리 로직
-//        return "redirect:/trade/" + tradeId;
-//    }
 
     @GetMapping("/tradeList")
     public String tradeList(Model model, HttpServletRequest request) {
@@ -124,6 +88,20 @@ public class TradeController {
 
 
         return "/";
+    }
+
+    @PostMapping("/updateStatus")
+    @Transactional
+    public String updateStatus(@RequestParam("tradeId") Long tradeId, @RequestParam("statusIndex") int statusIndex) {
+        try {
+            tradeService.updateStatus(tradeId, statusIndex);
+            // 현재 페이지를 리로드하는 JavaScript 코드를 반환
+            return "redirect:/trade/" + tradeId;
+        } catch (Exception e) {
+            e.printStackTrace(); // 에러 정보를 로그에 출력하거나 원하는 방식으로 처리할 수 있습니다.
+            // 오류 페이지로 리다이렉트하거나 오류 메시지를 표시하는 등의 처리를 수행합니다.
+            return "error";
+        }
     }
 
 }

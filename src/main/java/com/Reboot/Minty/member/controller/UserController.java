@@ -1,9 +1,6 @@
 package com.Reboot.Minty.member.controller;
 
-import com.Reboot.Minty.member.dto.CustomResponse;
-import com.Reboot.Minty.member.dto.JoinDto;
-import com.Reboot.Minty.member.dto.JoinLocationDto;
-import com.Reboot.Minty.member.dto.VerificationRequest;
+import com.Reboot.Minty.member.dto.*;
 import com.Reboot.Minty.member.entity.User;
 import com.Reboot.Minty.member.repository.UserRepository;
 import com.Reboot.Minty.member.service.JoinFormValidator;
@@ -227,5 +224,68 @@ public class UserController {
         }
     }
 
+    @GetMapping("/edit")
+    public String showEditForm(Model model, HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        User user = userService.getUserById(userId);
+
+        if (user != null) {
+            UpdateDto updateDto = new UpdateDto();
+            updateDto.setEmail(user.getEmail());
+            updateDto.setPassword(user.getPassword());
+            updateDto.setName(user.getName());
+            updateDto.setNickName(user.getNickName());
+            updateDto.setAgeRange(user.getAgeRange());
+            updateDto.setMobile(user.getMobile());
+            updateDto.setGender(user.getGender());
+
+            model.addAttribute("updateDto", updateDto);
+        } else {
+            model.addAttribute("updateDto", new UpdateDto());
+        }
+
+        return "member/edit";
+    }
+
+    @PostMapping("/edit")
+    public String editMember(@Valid @ModelAttribute UpdateDto updateDto, BindingResult bindingResult, HttpSession session, Model model) {
+        if (bindingResult.hasErrors()) {
+            return "member/edit";
+        }
+
+        Long userId = (Long) session.getAttribute("userId");
+        User user = userService.getUserById(userId);
+
+        if (user != null) {
+            try {
+                // 비밀번호만 수정하는 경우
+                if (!updateDto.getPassword().isEmpty() && updateDto.getNickName().isEmpty()) {
+                    user.setPassword(passwordEncoder.encode(updateDto.getPassword()));
+                }
+                // 닉네임만 수정하는 경우
+                else if (updateDto.getPassword().isEmpty() && !updateDto.getNickName().isEmpty()) {
+                    user.setNickName(updateDto.getNickName());
+                }
+                // 비밀번호와 닉네임을 함께 수정하는 경우
+                else {
+                    user.setPassword(passwordEncoder.encode(updateDto.getPassword()));
+                    user.setNickName(updateDto.getNickName());
+                }
+
+                user.setName(updateDto.getName());
+                user.setAgeRange(updateDto.getAgeRange());
+                user.setMobile(updateDto.getMobile());
+                user.setGender(updateDto.getGender());
+                userRepository.save(user);
+                model.addAttribute("updateSuccessMessage", "회원 정보가 성공적으로 업데이트되었습니다.");
+            } catch (Exception e) {
+                model.addAttribute("updateErrorMessage", "회원 정보를 업데이트하는 중에 오류가 발생했습니다.");
+            }
+        } else {
+            model.addAttribute("updateErrorMessage", "회원 정보를 찾을 수 없습니다.");
+        }
+
+        return "member/edit";
+    }
 
 }

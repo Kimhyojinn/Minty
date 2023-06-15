@@ -12,7 +12,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -98,4 +100,20 @@ public class TradeService {
     public Trade getTradeById(Long tradeId) {
         return tradeRepository.findById(tradeId).orElse(null);
     }
+
+    public void updateStatus(Long tradeId, int statusIndex) {
+        String[] statuses = {"대화요청", "거래시작", "거래중", "거래완료", "거래취소"};
+
+        if (statusIndex >= 0 && statusIndex < statuses.length) {
+            String newStatus = statuses[statusIndex];
+
+            tradeRepository.updateStatusById(tradeId, newStatus);
+
+            System.out.println("Trade " + tradeId + "의 상태가 " + newStatus + "로 변경되었습니다.");
+        } else {
+            System.out.println("Invalid status index.");
+        }
+    }
+
+
 }

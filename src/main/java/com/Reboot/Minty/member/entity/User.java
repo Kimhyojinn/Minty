@@ -11,7 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Table(name = "user")
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
 @Entity
@@ -33,7 +33,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "nickname")
     private String nickName;
 
     @Column(nullable = false, name = "ageRange")
